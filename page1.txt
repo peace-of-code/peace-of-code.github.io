@@ -1,1 +1,1 @@
-C {code} Style|C {code} style
+C {code} Style|For the Love of Code

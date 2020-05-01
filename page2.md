@@ -17,12 +17,11 @@ So I made a treaty with myself and allowed myself to put together simple
 JavaScript client only `.md` to `.html` generating code that allows me to write
 the rest of resume in markdown and `vi`.
 
-<img align="right" width="128" height="43" src="open-for-business.png">
-
 Notable employment history:
 ---
 
- * Dolby Labs (mobile jpeg HDR)
+ * zSpace Inc (VR system software)
+ * Dolby Labs (mobile JPEG HDR)
  * AT&T (Yellow Pages - YP Android - first ever AT&T app on Android)
  * Google (Desktop Search - didn't like it, quit)
  * WindRiver Systems (VxWorks, IDE, debugger)
