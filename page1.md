@@ -1,14 +1,16 @@
 
 Over the years I have written code in most of the possible and most bizarre styles you can think of.
 
-I never argues with a team about how the code must look as long as team's code style is self consistent and readable.
+I will not argue with a team about how the code must look.
+As long as team's code style is self consistent and readable I can follow it.
 
 For myself I've settled on what I've found most convent over the years. 
 
-My personal motto in code styling was: *"To achieve peace of mind and for the love of code you must achieve peace with the code first..."* 
-(I must confess - I've never understood `warrios` in various `codewarrior` tools)
+My personal motto is: *"To achieve peace of mind and for the love of code one must make peace with the code first..."* 
+(I must confess - I've never understood `warrior` in the `codewarrior` tools)
 
-I will use C/C99 as a language to explain the choices made but most of it is well applicable to Java, JavaScript, Rust and almost everything else.
+I will use C/C99 as a language to explain the choices made,
+but most of the style is applicable to Java, JavaScript, Rust and other languages.
 
 Tabs vs SPACES
 ---
@@ -16,20 +18,20 @@ Enough said: forget TAB existed.
 
 Naming. 
 ---
-NeverMixCamelCase with readable Linux/posix like lower_case_underscore_naming.
-
+Never mix `CamelCase` with readable Linux/posix like `lower_case_underscore_naming`.
 
 comas, spaces and punctuation
 ---
-spaces after comas (like in written English prose) and never inside ()
+Use spaces after comas (like in written English prose) and never after "(" or before ")".
 ~~~
 function_calls(parameter1, parameter2); // spaces always after "," and nowhere else
 ~~~
-spaces after control statements (special case)
+Always use spaces between control statements and following "(".
+In better organized languages (Swift/Rust) the parentheses around condition are removed.
 ~~~
-if (condition) { ... } // spaces after "if", "do", "while", "for", "switch" and never after "(" before ")"
+if (condition) { ... } // also after "do", "while", "for", "switch"
 ~~~
-spaces and "*" pointers two cases:
+spaces and "*" pointers two distinct cases:
 ~~~
 // special consideration for types and output parameters:
 // "const char*" is treated as pointer type thus "*" follows char without space
@@ -38,11 +40,15 @@ void foo(const char* *out) {
 }
 ~~~
 
-Vertical empty spaces
+Vertical emptiness
 ---
-Function definitions separated by empty line. Groups of variables may be separated by empty line.
-In all other cases do not use vertical separation of fill it with meaningful comment or split code
-in small functions that do not need to be read as a War and Peace paragraphs.
+Function definitions separated by single empty line. Groups of variables may be separated by empty line.
+Enums and type definition separated by single empty line.
+In all other cases do not use excessive vertical separation or at least fill 
+it with meaningful comments or split code
+into smaller functions. Code should not resemble "War and Peace". Brievety is important.
+Vertical space on laptops is limited and code is frequently read on smaller screens this days.
+Construction of human body also makes horizontal reading easier. 
 ~~~
 #include <stdio.h>
 
@@ -56,7 +62,7 @@ int main(int argc, const char* argv[]) {
 Indent
 ---
 Indent is **4**. indent 2 and 3 was good for 80x24 terminals. It's 21st century it is 4!
-(8 was good for Linus leads to unbearably vertical code)
+(Linus loved 8 but it resulted in unbearably hard to read vertical code)
 
 Header Files
 ---
@@ -73,7 +79,7 @@ enum { // always use anonymous hardened enums for constants
     MODULE_NAME_THIRTY_THREE = 33  // of registers and alike
 };
 
-#define ONE 1 // is bad
+#define ONE 1 // bad
 ~~~
 `short` enums option of compiler must be checked and turned **OFF**
 
@@ -108,7 +114,7 @@ void performance_critical_code() {
 }
 ~~~
 
-Variable length array or alloca()
+Variable length arrays or `alloca()`
 ---
 Only use when it is important for performance and the size is known to be small bounded and will fit on the stack in all situations.
 ~~~
@@ -321,9 +327,9 @@ typedef struct { float x; float y; } pointf_t; // is quite clean and useful type
 ~~~
 Don't forget struct names and typedef names exist in two distinct namespaces.
 
-callbacks
+Callbacks
 ---
-Callback is almost never function alone. It needs to carry data with it.
+Callback is almost never a function alone. It needs to carry data with it.
 God save us from a wonderful notions of functors and closures. In C terms it is simple:
 ~~~
 
@@ -360,12 +366,25 @@ yes, comparing to JavaScript closures on Objective C/Swift blocks it looks verbo
 This is why aforementioned languages exist. It would be nice (and wishful thinking) if C21 ANSI 
 committee would adopt blocks.
 
-Single File Library
+Warnings
+---
+Code must be compiled with maximum level of warnings turned on.
+It is good idea to turn warning into errors on build system and maintain zero warnings policy.
+
+Macro
+---
+Macro definitions may be used very carefully for conditional compilation like e.g. `assert` or
+when source code information like __FILE__ __LINE__ __FUNC__ is needed. In all other cases 
+macro processor should be used with utmost care. Always surround macro parameters instantiations with () 
+~~~
+#define min(a, b) ((a) < (b) ? (a) : (b)) // all the paranthesis are necessary
+~~~
+
+Single File Libraries
 ---
 Is a great concept for simplified distribution of straight forward pieces of C code.
-(If you are not familiar with it - "google" it - it worth every minute of your time)
-It is absolute must if you can and you going to distribute your creation.
-For the internal codebases do not abuse it - it makes code harder to read and use.
-
+If you are not familiar with it - "google" it - it is very admirable idea!
+It is great technique to distribute simple library source code.
+For the internal codebases do not abuse it - it makes code harder to read, use and maintain.
 
 To see this set of rules in action: <a href="https://tinyurl.com/hashtable-c" target="_blank">https://tinyurl.com/hashtable-c<a>
