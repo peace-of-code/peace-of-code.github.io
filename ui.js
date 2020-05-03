@@ -103,8 +103,8 @@ function ui_init(window, document) {
 
     content.onclick = function(e) {
         if (menu.className.indexOf('active') !== -1) {
-            e.stopPropagation(); // stop dispatching to parents
-            e.preventDefault();  // do not do default action
+//          e.stopPropagation(); // stop dispatching to parents
+//          e.preventDefault();  // do not do default action
             toggleAll(e);
         }
     };
