@@ -1,5 +1,4 @@
-
-Over the years I have written code in most of the possible and most bizarre styles you can think of.
+Over the years I have been forced to write code in most of the possible and most bizarre styles you can think of.
 
 I will not argue with a team about how the code must look.
 As long as team's code style is self consistent and readable I can follow it.
@@ -7,7 +6,7 @@ As long as team's code style is self consistent and readable I can follow it.
 For myself I've settled on what I've found most convent over the years. 
 
 My personal motto is: *"To achieve peace of mind and for the love of code one must make peace with the code first..."* 
-(I must confess - I've never understood `warrior` in the `codewarrior` tools)
+(I must confess - I've never understood `warrior` in the `CodeWarrior` tools)
 
 I will use C/C99 as a language to explain the choices made,
 but most of the style is applicable to Java, JavaScript, Rust and other languages.
@@ -19,12 +18,18 @@ Enough said: forget TAB existed.
 Naming. 
 ---
 Never mix `CamelCase` with readable Linux/posix like `lower_case_underscore_naming`.
+~~~
+static void foo(int x, int y) {
+    int z = 0; // use shortest possible local variables names when scope is tiny
+    ...
+}
+~~~
 
 comas, spaces and punctuation
 ---
 Use spaces after comas (like in written English prose) and never after "(" or before ")".
 ~~~
-function_calls(parameter1, parameter2); // spaces always after "," and nowhere else
+foo(p1, p2); // spaces always after "," and nowhere else
 ~~~
 Always use spaces between control statements and following "(".
 In better organized languages (Swift/Rust) the parentheses around condition are removed.
@@ -52,7 +57,7 @@ Construction of human body also makes horizontal reading easier.
 ~~~
 #include <stdio.h>
 
-type_t* global;
+static type_t* global; // do not initialize global statics to 0/null, linker does.
 
 int main(int argc, const char* argv[]) {
     return 0;
@@ -194,14 +199,13 @@ Single line control statements
 Avoid single line control statements except absolutely trivial:
 ~~~
 if (something) { foo(); } else { bar(); } // bad
-if (something) { foo(); } // only use when readability is preserved
+if (something) { foo(); } // only w/o else; use where readability is better
 if (something) { // debugger friendly: simplifies putting breakpoint on foo()
     foo();       // or inserting printf() around foo() call
 } 
 ~~~
 
-
-switch statements
+`switch` statements
 ---
 `switch` statements indent and `break`
 Only use multiple case labels on a single statement when it is really applicable.
@@ -289,22 +293,26 @@ int sqrt(float* result, float x) { // returns 0 on success and posix error code 
 
 64-bit portability.
 ---
-Always think about it. And also do not rely on signed pointers being in any specific order.
+Always think about it. Avoid signed pointers comparison.
 ~~~
     void* p = ...;
     uintptr_t pointer_as_integer = (uintptr_t)p;
 ~~~
 
+`unsigned` types.
+---
+Only use `unsigned` for bit-wise operation and interfacing with h/w.
+~~~
+    for (uint32_t i = n; i >= 0; i--) { ... } // will run forever
+~~~
+
 `malloc()`/`free()`
 ---
-Heap has been invented for a reasons. 
-Some of them are to keep our life more interesting (and a bit harder).
-To simplify leaking something and justifying selling new computer to a customer.
-Creating more jobs among software engineers. Selling named engineers plethora of leak hunting tools.
-Justifying performance expensive but convenient technologies of garbage collection or automatic reference counting.
-And last but not the least, managing unpredictable and unknown at compiler time unbounded amount of data up to the size of available memory.
-On multitasking system the last reason above creates it's own cooperation problems.
-Never the less, it is important to understand that both `malloc()` and `free()` in addition to poor performance
+Heap has been invented for a reason. 
+Main reason was managing unpredictable and unknown at compiler time unbounded amount 
+of data up to the size of available memory.
+(On multitasking system this also creates some interesting cooperation problems.)
+It is very important to understand that both `malloc()` and `free()` in addition to poor performance
 are also __**synchronization**__ points and do affect the performance of multi-threaded system in a hard and subtle ways:
 ~~~
 void performance_critical_function_that_can_be_called_from_multiple_threads() {
@@ -313,6 +321,13 @@ void performance_critical_function_that_can_be_called_from_multiple_threads() {
     free(p);
 }
 ~~~
+
+Some of the other reasons for inventing `heap` probably were:
+* to keep our life more interesting (and a bit harder);
+* to simplify leaking something and justifying selling new computers more frequently;
+* to create more jobs among software engineers; 
+* to sell plethora of leak hunting tools to named engineers;
+* to justify performance expensive but convenient technologies of garbage collection or automatic reference counting.
 
 
 typedef versus struct
@@ -371,13 +386,27 @@ Warnings
 Code must be compiled with maximum level of warnings turned on.
 It is good idea to turn warning into errors on build system and maintain zero warnings policy.
 
-Macro
+Macros
 ---
 Macro definitions may be used very carefully for conditional compilation like e.g. `assert` or
 when source code information like __FILE__ __LINE__ __FUNC__ is needed. In all other cases 
 macro processor should be used with utmost care. Always surround macro parameters instantiations with () 
 ~~~
-#define min(a, b) ((a) < (b) ? (a) : (b)) // all the paranthesis are necessary
+#define countof(a) ((int)(sizeof(a) / sizeof((a)[0]))) // note extra parenthesis
+
+#define assertion(e, ...) do { if (!(e)) { _assertion_(__FILE__, __LINE__, __func__, #e, ##__VA_ARGS__); } } while (false)
+
+#define case_return(id) case id: return #id;
+
+static const char* id2str(int id) {
+    switch (id) {
+        case_return(LOOPER_ID_MAIN);
+        case_return(LOOPER_ID_INPUT);
+        case_return(LOOPER_ID_ACCEL);
+        case_return(LOOPER_ID_USER);
+        default: assertion(false, "id=%d", id); return "???";
+    }
+}
 ~~~
 
 Single File Libraries
