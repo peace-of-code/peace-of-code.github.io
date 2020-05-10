@@ -74,6 +74,8 @@ function ui_init(window, document) {
     function click_here_animation() {
         var opacity = 100;
         var x = 60;
+        document.getElementById("layout").insertAdjacentHTML('afterbegin', 
+            "<div id='click_here' class='click_here'><img src='click-here.png'/></div>");
         var click_here = document.getElementById("click_here");
         var move_click = function() {
             x -= 1;
